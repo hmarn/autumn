@@ -23,5 +23,9 @@ module Autumn
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+    # config/application.rb
+
+    # After adding ssl, this line is added to log incoming requests for debugging purposes
+    config.middleware.insert_before 0, Rack::Logger
   end
 end

@@ -42,3 +42,20 @@ pidfile ENV.fetch("PIDFILE") { "tmp/pids/server.pid" }
 
 # Allow puma to be restarted by `bin/rails restart` command.
 plugin :tmp_restart
+
+# Set up SSL if environment variables are defined
+if ENV['PUMA_BIND'].present? && ENV['SSL_CERTIFICATE_PATH'].present? && ENV['SSL_CERTIFICATE_KEY_PATH'].present?
+  bind ENV['PUMA_BIND']
+  ssl_bind '0.0.0.0', 3000, {
+    cert: ENV['SSL_CERTIFICATE_PATH'],
+    key: ENV['SSL_CERTIFICATE_KEY_PATH'],
+    verify_mode: 'none'
+  }
+else
+  # Fallback to non-SSL configuration
+  bind "tcp://0.0.0.0:3000"
+end
+
+on_worker_boot do
+  ActiveRecord::Base.establish_connection if defined?(ActiveRecord)
+end

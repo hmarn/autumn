@@ -55,8 +55,13 @@ RUN useradd rails --create-home --shell /bin/bash && \
 USER rails:rails
 
 # Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
+COPY docker-entrypoint.sh /usr/bin/docker-entrypoint.sh
+ENTRYPOINT ["/usr/bin/docker-entrypoint.sh"]
 
 # Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD ["./bin/rails", "server"]
+EXPOSE 3000 443 80
+CMD ["bundle", "exec", "puma", "-C", "config/puma.rb"]
+# CMD ["rails", "server", "-b", "0.0.0.0"]
+# CMD ["./bin/rails", "server"]
+# bundle exec rails server -b '0.0.0.0' -p 3000
+# CMD [ "bundle", "exec", "rails", "s", "-b", "0.0.0.0", "-p", "3000" ]
